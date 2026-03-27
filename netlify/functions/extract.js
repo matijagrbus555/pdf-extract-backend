@@ -82,7 +82,7 @@ exports.handler = async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        pdf_url: pdfUrl,
+        url: pdfUrl,
         schema,
       }),
     })
