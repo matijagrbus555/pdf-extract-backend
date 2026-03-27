@@ -75,7 +75,7 @@ exports.handler = async (event) => {
     }
 
     // Pozivamo PDFVector s URL-om i shemom
-    const extractRes = await fetch("https://www.pdfvector.com/api/pdf-extract", {
+    const extractRes = await fetch("https://www.pdfvector.com/v1/api/pdf-extract", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
