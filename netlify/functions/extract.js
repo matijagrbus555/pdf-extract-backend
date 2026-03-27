@@ -37,16 +37,54 @@ exports.handler = async (event) => {
     }
 
     // primjer sheme: ime, prezime, razred kao stringovi
-    const schema = {
-      type: "object",
-      properties: {
-        ime: { type: "string" },
-        prezime: { type: "string" },
-        razred: { type: "string" },
-      },
-      required: ["ime", "prezime", "razred"],
-    }
+ const schema = {
+  type: "object",
+  properties: {
+    mbo: { type: "string" },
+    ime_prezime: { type: "string" },
+    oib: { type: "string" },
+    datum_rodjenja: { type: "string" },
+    grad_naselje: { type: "string" },
+    ulica_broj: { type: "string" },
+    sifra_zdr_ustanove: { type: "string" },
+    sifra_ugovornog_doktora: { type: "string" },
+    kat_osiguranja: { type: "string" },
+    spol: { type: "string" },
+    dijagnoza: { type: "string" },
+    sifra_dijag: { type: "string" },
+    polaziste: { type: "string" },
+    odrediste: { type: "string" },
+    datum: { type: "string" },
 
+    sanitetsko_vozilo: { type: "boolean" },
+    plovilo: { type: "boolean" },
+    vozilo_i_plovilo: { type: "boolean" },
+    lezi: { type: "boolean" },
+    sjedi: { type: "boolean" },
+    ne_smije_se_samostalno_kretati: { type: "boolean" },
+    vrijedi_za_vise_putovanja: { type: "boolean" },
+    vrijedi_za_jedno_putovanje: { type: "boolean" },
+
+    napomena: { type: "string" }
+  },
+  required: [
+    "mbo",
+    "ime_prezime",
+    "oib",
+    "datum_rodjenja",
+    "grad_naselje",
+    "ulica_broj",
+    "sifra_zdr_ustanove",
+    "sifra_ugovornog_doktora",
+    "kat_osiguranja",
+    "spol",
+    "dijagnoza",
+    "sifra_dijag",
+    "polaziste",
+    "odrediste",
+    "datum"
+  ]
+}
     const formData = new FormData()
     formData.append("file", Buffer.from(pdfBuffer), "document.pdf")
     formData.append("schema", JSON.stringify(schema))
