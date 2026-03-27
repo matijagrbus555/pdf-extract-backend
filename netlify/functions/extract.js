@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       }
     }
 
-    // JSON schema: TR, teksta i checkboxovi
+    // JSON schema za tvoj nalog
     const schema = {
       type: "object",
       properties: {
@@ -71,10 +71,11 @@ exports.handler = async (event) => {
         "polaziste",
         "odrediste",
         "datum"
-      ]
+      ],
+      additionalProperties: false
     }
 
-    // Pozivamo PDFVector s URL-om i shemom
+    // Poziv prema PDFVector /v1/api/extract
     const extractRes = await fetch("https://www.pdfvector.com/v1/api/extract", {
       method: "POST",
       headers: {
@@ -82,8 +83,10 @@ exports.handler = async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: pdfUrl,
-        schema,
+        url: pdfUrl, // PDFVector docs: "url": "https://example.com/invoice.pdf"
+        prompt:
+          "Extract sanitetski nalog fields: mbo, full name (ime i prezime), oib, date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), health institution code (sifra zdr ustanove), contracted doctor code (sifra ugovornog doktora), insurance category (kat osiguranja), gender (spol), diagnosis text (dijagnoza), diagnosis code (sifra dijag), departure (polaziste), destination (odrediste), date (datum), transport options (sanitetsko vozilo, plovilo, vozilo i plovilo), position (lezi, sjedi, ne smije se samostalno kretati), whether valid for multiple trips or single trip (vrijedi za vise putovanja, vrijedi za jedno putovanje), note (napomena).",
+        schema: schema
       }),
     })
 
