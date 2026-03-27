@@ -52,7 +52,7 @@ exports.handler = async (event) => {
         ne_smije_se_samostalno_kretati: { type: "boolean" },
         vrijedi_za_vise_putovanja: { type: "boolean" },
         vrijedi_za_jedno_putovanje: { type: "boolean" },
-
+        mjesto_datum: { type: "string" },
         napomena: { type: "string" }
       },
       required: [
@@ -85,7 +85,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         url: pdfUrl, // PDFVector docs: "url": "https://example.com/invoice.pdf"
         prompt:
-          "Extract sanitetski nalog fields: mbo, full name (ime i prezime), oib, date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), health institution code (sifra zdr ustanove), contracted doctor code (sifra ugovornog doktora), insurance category (kat osiguranja), gender (spol), diagnosis text (dijagnoza), diagnosis code (sifra dijag), departure (polaziste), destination (odrediste), date (datum), transport options (sanitetsko vozilo, plovilo, vozilo i plovilo), position (lezi, sjedi, ne smije se samostalno kretati), whether valid for multiple trips or single trip (vrijedi za vise putovanja, vrijedi za jedno putovanje), note (napomena).",
+          "Extract sanitetski nalog fields: mbo, full name (ime i prezime), oib, date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), health institution code (sifra zdr ustanove), contracted doctor code (sifra ugovornog doktora), insurance category (kat osiguranja), gender (spol), diagnosis text (dijagnoza), diagnosis code (sifra dijag), departure (polaziste), destination (odrediste), date (datum), transport options (sanitetsko vozilo, plovilo, vozilo i plovilo), position (lezi, sjedi, ne smije se samostalno kretati), whether valid for multiple trips or single trip (vrijedi za vise putovanja, vrijedi za jedno putovanje), note (napomena). Also extract the place and date from the 'u ______, ______' line at the bottom into a single field 'mjesto_datum'.",
         schema: schema
       }),
     })
@@ -126,6 +126,7 @@ exports.handler = async (event) => {
         ne_smije_se_samostalno_kretati: result.ne_smije_se_samostalno_kretati,
         vrijedi_za_vise_putovanja: result.vrijedi_za_vise_putovanja,
         vrijedi_za_jedno_putovanje: result.vrijedi_za_jedno_putovanje,
+        mjesto_datum: result.mjesto_datum,
         napomena: result.napomena,
         raw: result
       }),
