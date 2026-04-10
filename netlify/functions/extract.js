@@ -56,7 +56,7 @@ exports.handler = async (event) => {
     }
 
     // Poziv prema PDFVector /v1/api/extract
-    const extractRes = await fetch("https://www.global.pdfvector.com/v1/api/extract", {
+    const extractRes = await fetch("https://www.global.pdfvector.com/api/document/extract", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
