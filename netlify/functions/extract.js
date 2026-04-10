@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       }
     }
 
-    // JSON schema za tvoj nalog
+    // JSON schema za tvoj nal
     const schema = {
       type: "object",
       properties: {
