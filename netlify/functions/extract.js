@@ -39,7 +39,6 @@ exports.handler = async (event) => {
 
         lezi: { type: "boolean" },
         sjedi: { type: "boolean" },
-        mjesto_datum: { type: "string" },
         napomena: { type: "string" }
       },
       required: [
