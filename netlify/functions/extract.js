@@ -1,3 +1,4 @@
+// netlify/functions/extract.js
 exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
@@ -7,12 +8,13 @@ exports.handler = async (event) => {
       }
     }
 
+    // OČEKUJEMO { "url": "https://..." } iz Bubblea
     const { url } = JSON.parse(event.body || "{}")
 
     if (!url) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing pdfUrl" }),
+        body: JSON.stringify({ error: "Missing url" }),
       }
     }
 
@@ -24,11 +26,12 @@ exports.handler = async (event) => {
       }
     }
 
-    // JSON schema za tvoj nal
+    // JSON schema za nalog – samo polja koja stvarno želiš koristiti
     const schema = {
       type: "object",
       properties: {
-        ime_prezime: { type: "string" },
+        ime: { type: "string" },
+        prezime: { type: "string" },
         datum_rodjenja: { type: "string" },
         grad_naselje: { type: "string" },
         ulica_broj: { type: "string" },
@@ -36,18 +39,15 @@ exports.handler = async (event) => {
         polaziste: { type: "string" },
         odrediste: { type: "string" },
         datum: { type: "string" },
-
-        lezi: { type: "boolean" },
-        sjedi: { type: "boolean" },
         napomena: { type: "string" }
       },
       required: [
-        "ime_prezime",
+        "ime",
+        "prezime",
         "datum_rodjenja",
         "grad_naselje",
         "ulica_broj",
         "spol",
-        "dijagnoza",
         "polaziste",
         "odrediste",
         "datum"
@@ -55,17 +55,17 @@ exports.handler = async (event) => {
       additionalProperties: false
     }
 
-    // Poziv prema PDFVector /v1/api/extract
-    const extractRes = await fetch("https://www.global.pdfvector.com/api/document/extract", {
+    // Poziv prema PDFVector (novi global host)
+    const extractRes = await fetch("https://global.pdfvector.com/api/document/extract", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: url, // PDFVector docs: "url": "https://example.com/invoice.pdf"
+        url: url,
         prompt:
-          "Extract sanitetski nalog fields: mbo, full name (ime i prezime), oib, date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), health institution code (sifra zdr ustanove), contracted doctor code (sifra ugovornog doktora), insurance category (kat osiguranja), gender (spol), diagnosis text (dijagnoza), diagnosis code (sifra dijag), departure (polaziste), destination (odrediste), date (datum), transport options (sanitetsko vozilo, plovilo, vozilo i plovilo), position (lezi, sjedi, ne smije se samostalno kretati), whether valid for multiple trips or single trip (vrijedi za vise putovanja, vrijedi za jedno putovanje), note (napomena). Also extract the place and date from the 'u ______, ______' line at the bottom into a single field 'mjesto_datum'.",
+          "Extract sanitetski nalog fields: first name (ime), last name (prezime), date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), gender (spol), departure (polaziste), destination (odrediste), date (datum), note (napomena). Return them in JSON exactly matching keys: ime, prezime, datum_rodjenja, grad_naselje, ulica_broj, spol, polaziste, odrediste, datum, napomena.",
         schema: schema
       }),
     })
@@ -83,30 +83,15 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        mbo: result.mbo,
-        ime_prezime: result.ime_prezime,
-        oib: result.oib,
+        ime: result.ime,
+        prezime: result.prezime,
         datum_rodjenja: result.datum_rodjenja,
         grad_naselje: result.grad_naselje,
         ulica_broj: result.ulica_broj,
-        sifra_zdr_ustanove: result.sifra_zdr_ustanove,
-        sifra_ugovornog_doktora: result.sifra_ugovornog_doktora,
-        kat_osiguranja: result.kat_osiguranja,
         spol: result.spol,
-        dijagnoza: result.dijagnoza,
-        sifra_dijag: result.sifra_dijag,
         polaziste: result.polaziste,
         odrediste: result.odrediste,
         datum: result.datum,
-        sanitetsko_vozilo: result.sanitetsko_vozilo,
-        plovilo: result.plovilo,
-        vozilo_i_plovilo: result.vozilo_i_plovilo,
-        lezi: result.lezi,
-        sjedi: result.sjedi,
-        ne_smije_se_samostalno_kretati: result.ne_smije_se_samostalno_kretati,
-        vrijedi_za_vise_putovanja: result.vrijedi_za_vise_putovanja,
-        vrijedi_za_jedno_putovanje: result.vrijedi_za_jedno_putovanje,
-        mjesto_datum: result.mjesto_datum,
         napomena: result.napomena,
         raw: result
       }),
