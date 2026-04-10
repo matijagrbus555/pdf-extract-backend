@@ -7,9 +7,9 @@ exports.handler = async (event) => {
       }
     }
 
-    const { pdfUrl } = JSON.parse(event.body || "{}")
+    const { url } = JSON.parse(event.body || "{}")
 
-    if (!pdfUrl) {
+    if (!url) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Missing pdfUrl" }),
@@ -63,7 +63,7 @@ exports.handler = async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: pdfUrl, // PDFVector docs: "url": "https://example.com/invoice.pdf"
+        url: url, // PDFVector docs: "url": "https://example.com/invoice.pdf"
         prompt:
           "Extract sanitetski nalog fields: mbo, full name (ime i prezime), oib, date of birth (datum rodjenja), city and settlement (grad i naselje), street and number (ulica i broj), health institution code (sifra zdr ustanove), contracted doctor code (sifra ugovornog doktora), insurance category (kat osiguranja), gender (spol), diagnosis text (dijagnoza), diagnosis code (sifra dijag), departure (polaziste), destination (odrediste), date (datum), transport options (sanitetsko vozilo, plovilo, vozilo i plovilo), position (lezi, sjedi, ne smije se samostalno kretati), whether valid for multiple trips or single trip (vrijedi za vise putovanja, vrijedi za jedno putovanje), note (napomena). Also extract the place and date from the 'u ______, ______' line at the bottom into a single field 'mjesto_datum'.",
         schema: schema
