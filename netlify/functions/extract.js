@@ -26,7 +26,7 @@ exports.handler = async (event) => {
       }
     }
 
-    // JSON schema za nalog – sve što si imao + razdvojeno polazište/odredište
+    // JSON schema za nalog – razdvojeno polazište/odredište + poštanski brojevi
     const schema = {
       type: "object",
       properties: {
@@ -39,7 +39,6 @@ exports.handler = async (event) => {
         spol: { type: "string" },
         postanski_broj: { type: "string" },
 
-
         // polaziste – staro polje + rastavljeno
         polaziste: { type: "string" },
         polaziste_ustanova: { type: "string" },
@@ -47,14 +46,12 @@ exports.handler = async (event) => {
         polaziste_grad: { type: "string" },
         polaziste_postanski_broj: { type: "string" },
 
-
         // odrediste – staro polje + rastavljeno
         odrediste: { type: "string" },
         odrediste_ustanova: { type: "string" },
         odrediste_ulica_broj: { type: "string" },
         odrediste_grad: { type: "string" },
         odrediste_postanski_broj: { type: "string" },
-
 
         // datumi i napomena
         datum: { type: "string" },
@@ -85,6 +82,10 @@ exports.handler = async (event) => {
         url: url,
         prompt: `
           This is a Croatian medical transport form "NALOG za sanitetski prijevoz osigurane osobe".
+          You are not allowed to guess or summarize.
+          If a field is not clearly present, return an empty string "" for that field.
+          Always copy the text exactly as printed in the document.
+
           Extract these fields and return JSON with EXACT keys:
           ime, prezime, datum_rodjenja, grad_naselje, ulica_broj, spol, postanski_broj,
           polaziste, polaziste_ustanova, polaziste_ulica_broj, polaziste_grad, polaziste_postanski_broj,
@@ -134,7 +135,11 @@ exports.handler = async (event) => {
           Field "Datum:" near the middle/bottom of the form -> "datum" (e.g. "31.03.2026").
 
           8) Napomena:
-          Text after "NAPOMENA:" -> "napomena".
+          Locate the label "NAPOMENA:" on the form.
+          - "napomena": return ALL text after "NAPOMENA:" on that line and on the following lines until you reach the next section or an empty area.
+          Do NOT summarize, translate, or change the wording.
+          Return the text exactly as printed (preserve line breaks and punctuation).
+          If there is no note, return an empty string "".
 
           Return JSON that strictly matches the provided JSON schema (fields and types).
         `,
@@ -161,7 +166,6 @@ exports.handler = async (event) => {
         grad_naselje: result.grad_naselje,
         ulica_broj: result.ulica_broj,
         postanski_broj: result.postanski_broj,
-
         spol: result.spol,
 
         polaziste: result.polaziste,
